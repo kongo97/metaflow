@@ -1,0 +1,40 @@
+version: '3'
+services:
+
+  frontend:
+    build:
+      context: .docker
+      dockerfile: ./containers/vue/Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./project/frontend:/app
+    working_dir: /app
+
+  backend:
+    build:
+      context: .docker
+      dockerfile: ./containers/express/Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./project/backend:/app
+    working_dir: /app
+    networks:
+      - mynetwork
+
+  database-mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: jobox
+      MONGO_INITDB_ROOT_PASSWORD: coccodrillo
+      MONGO_INITDB_DATABASE: metaflow
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
